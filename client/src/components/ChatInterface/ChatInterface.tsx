@@ -109,11 +109,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
 
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100% - 70px)', px: 2, py: 1.5 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100% - 300px)', px: 2, py: 1.5 }}>
       <Box 
         className="chat-messages" 
         sx={{ 
           flexGrow: 1, 
+          minHeight: 'calc(100vh - 300px)',
           overflowY: "auto",
           overflowX: "hidden",
           mb: 2, 

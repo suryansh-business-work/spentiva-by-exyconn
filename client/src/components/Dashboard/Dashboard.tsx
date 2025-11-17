@@ -181,12 +181,6 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
                   key={filterOption}
                   variant={filter === filterOption ? "contained" : "outlined"}
                   onClick={() => handleFilterChange(filterOption)}
-                  sx={{
-                    textTransform: "capitalize",
-                    ...(filter === filterOption && {
-                      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                    }),
-                  }}
                 >
                   {filterOption === "last7days"
                     ? "Last 7 Days"

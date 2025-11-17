@@ -124,85 +124,110 @@ const TrackerView: React.FC = () => {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      {/* Fixed Header */}
+      {/* Fixed Header with Tabs */}
       <Box
         sx={{
           background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
           color: "white",
-          px: 2,
-          py: 2,
           position: 'sticky',
           top: 0,
           zIndex: 10,
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 0.5 }}>
-          <Box
-            component="button"
-            onClick={() => navigate("/trackers")}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 0.5,
-              background: "transparent",
-              border: "none",
-              cursor: "pointer",
-              color: "white",
-              fontSize: "0.8rem",
-              padding: 0,
-              "&:hover": { opacity: 0.8 },
+        {/* Tracker Info Row */}
+        <Box sx={{ px: { xs: 1.5, sm: 2 }, pt: 2, pb: 0.5 }}>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 0.5 }}>
+            <Box
+              component="button"
+              onClick={() => navigate("/trackers")}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 0.3,
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                color: "white",
+                fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                padding: 0,
+                "&:hover": { opacity: 0.8 },
+              }}
+            >
+              <ArrowBackIcon sx={{ fontSize: { xs: 12, sm: 14 } }} />
+              Back
+            </Box>
+          </Box>
+
+          <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1, sm: 1.5 }, flexWrap: "wrap" }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 0, fontSize: { xs: "0.95rem", sm: "1.05rem" } }}>
+              {tracker.name}
+            </Typography>
+            <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>
+              <Chip 
+                label={tracker.type} 
+                size="small"
+                sx={{ 
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                  color: "white",
+                  fontWeight: 600,
+                  height: { xs: 18, sm: 20 },
+                  fontSize: { xs: "0.65rem", sm: "0.7rem" },
+                  "& .MuiChip-label": { px: 0.75 }
+                }} 
+              />
+              <Chip 
+                label={getCurrencySymbol(tracker.currency)} 
+                size="small"
+                sx={{ 
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                  color: "white",
+                  fontWeight: 600,
+                  height: { xs: 18, sm: 20 },
+                  fontSize: { xs: "0.65rem", sm: "0.7rem" },
+                  "& .MuiChip-label": { px: 0.75 }
+                }} 
+              />
+            </Box>
+          </Box>
+        </Box>
+
+        {/* Tabs Row */}
+        <Box sx={{ px: { xs: 0, sm: 1 } }}>
+          <Tabs 
+            value={tabValue} 
+            onChange={handleTabChange} 
+            variant="fullWidth" 
+            sx={{ 
+              minHeight: { xs: 40, sm: 44 },
+              '& .MuiTab-root': {
+                minHeight: { xs: 40, sm: 44 },
+                py: { xs: 0.5, sm: 1 },
+                px: { xs: 1, sm: 1.5 },
+                fontSize: { xs: "0.7rem", sm: "0.8rem" },
+                color: 'rgba(255, 255, 255, 0.7)',
+                '&.Mui-selected': {
+                  color: 'white',
+                },
+              },
+              '& .MuiTabs-indicator': {
+                backgroundColor: 'white',
+                height: 2,
+              },
+              '& .MuiTab-iconWrapper': {
+                fontSize: { xs: "0.95rem", sm: "1.1rem" },
+                marginRight: { xs: 0.5, sm: 0.75 },
+              },
             }}
           >
-            <ArrowBackIcon sx={{ fontSize: 16 }} />
-            Back to Trackers
-          </Box>
-        </Box>
-
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flexWrap: "wrap" }}>
-          <Typography variant="h6" sx={{ fontWeight: 600, mb: 0, fontSize: "1.1rem" }}>
-            {tracker.name}
-          </Typography>
-          <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-            <Chip 
-              label={tracker.type} 
-              size="small"
-              sx={{ 
-                backgroundColor: "rgba(255, 255, 255, 0.2)",
-                color: "white",
-                fontWeight: 600
-              }} 
-            />
-            <Chip 
-              label={getCurrencySymbol(tracker.currency)} 
-              size="small"
-              sx={{ 
-                backgroundColor: "rgba(255, 255, 255, 0.2)",
-                color: "white",
-                fontWeight: 600
-              }} 
-            />
-          </Box>
-          {tracker.description && (
-            <Typography variant="body2" sx={{ opacity: 0.9, fontSize: "0.875rem" }}>
-              {tracker.description}
-            </Typography>
-          )}
-        </Box>
-      </Box>
-
-      {/* Fixed Tabs */}
-      <Box sx={{ borderBottom: 1, borderColor: "divider", backgroundColor: "white", position: 'sticky', top: 'auto', zIndex: 9 }}>
-        <Container maxWidth="xl" sx={{ px: { xs: 1, sm: 2 } }}>
-          <Tabs value={tabValue} onChange={handleTabChange} variant="fullWidth" sx={{ minHeight: 48 }}>
             <Tab icon={<ChatIcon />} label="Chat" iconPosition="start" />
             <Tab icon={<DashboardIcon />} label="Dashboard" iconPosition="start" />
             <Tab icon={<ReceiptLongIcon />} label="Transactions" iconPosition="start" />
           </Tabs>
-        </Container>
+        </Box>
       </Box>
 
       {/* Scrollable Content */}
-      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 'calc(100vh - 180px)' }}>
         <TabPanel value={tabValue} index={0}>
           <ChatInterface trackerId={trackerId} />
         </TabPanel>

@@ -187,10 +187,6 @@ const Signup: React.FC = () => {
               size="large"
               onClick={handleNext}
               disabled={loading || !name.trim()}
-              sx={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                mb: 2,
-              }}
             >
               Next
             </Button>
@@ -232,10 +228,6 @@ const Signup: React.FC = () => {
               size="large"
               onClick={handleNext}
               disabled={loading || phone.length !== 10}
-              sx={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                mb: 2,
-              }}
             >
               {loading ? <CircularProgress size={24} color="inherit" /> : 'Send OTP'}
             </Button>
@@ -277,10 +269,6 @@ const Signup: React.FC = () => {
               size="large"
               onClick={handleVerifyOTP}
               disabled={loading || otp.length !== 6}
-              sx={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                mb: 2,
-              }}
             >
               {loading ? <CircularProgress size={24} color="inherit" /> : 'Create Account'}
             </Button>

@@ -45,7 +45,7 @@ const AppContent = () => {
 
   if (authLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <CircularProgress />
       </Box>
     );
@@ -55,7 +55,7 @@ const AppContent = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+        <Box sx={{ display: "flex", flexDirection: "column" }}>
           {isAuthenticated && <Header />}
           <Box sx={{ flexGrow: 1 }}>
             <Routes>

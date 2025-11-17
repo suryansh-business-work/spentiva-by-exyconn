@@ -59,7 +59,7 @@ const Header: React.FC = () => {
     <>
       <AppBar position="sticky" sx={{ background: "linear-gradient(135deg, #10b981 0%, #059669 100%)" }}>
         <Toolbar sx={{ minHeight: { xs: 48, sm: 56 }, py: 0.5 }}>
-          <AccountBalanceWalletIcon sx={{ mr: { xs: 0.5, md: 1 }, fontSize: { xs: 22, md: 26 } }} />
+          <AccountBalanceWalletIcon sx={{ color: '#fff', mr: { xs: 0.5, md: 1 }, fontSize: { xs: 22, md: 26 } }} />
           <Typography
             variant="h6"
             component="div"
@@ -67,6 +67,7 @@ const Header: React.FC = () => {
               flexGrow: 1,
               fontWeight: 600,
               fontSize: { xs: "0.9rem", sm: "1.1rem" },
+              color: '#fff',
             }}
           >
             Expense Tracker
@@ -75,7 +76,7 @@ const Header: React.FC = () => {
           <IconButton
             color="inherit"
             onClick={toggleTheme}
-            sx={{ mr: { xs: 0.5, md: 1 } }}
+            sx={{ mr: { xs: 0.5, md: 1, color: '#fff', } }}
             aria-label="Toggle dark mode"
           >
             {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
@@ -86,7 +87,7 @@ const Header: React.FC = () => {
               color="inherit"
               edge="end"
               onClick={() => setDrawerOpen(true)}
-              sx={{ ml: 1 }}
+              sx={{ ml: 1, color: '#fff', }}
             >
               <MenuIcon />
             </IconButton>
@@ -99,6 +100,7 @@ const Header: React.FC = () => {
                 variant={location.pathname === "/trackers" || isInTrackerView ? "outlined" : "text"}
                 sx={{
                   borderColor: "rgba(255, 255, 255, 0.5)",
+                  color: '#fff',
                   "&:hover": {
                     backgroundColor: "rgba(255, 255, 255, 0.1)",
                   },
@@ -113,6 +115,7 @@ const Header: React.FC = () => {
                 variant={location.pathname === "/profile" ? "outlined" : "text"}
                 sx={{
                   borderColor: "rgba(255, 255, 255, 0.5)",
+                  color: '#fff',
                   "&:hover": {
                     backgroundColor: "rgba(255, 255, 255, 0.1)",
                   },
@@ -126,6 +129,7 @@ const Header: React.FC = () => {
                 onClick={handleLogout}
                 sx={{
                   borderColor: "rgba(255, 255, 255, 0.5)",
+                  color: '#fff',
                   "&:hover": {
                     backgroundColor: "rgba(255, 255, 255, 0.1)",
                   },

@@ -172,12 +172,6 @@ const Trackers: React.FC = () => {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => handleOpenDialog()}
-            sx={{
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-              "&:hover": {
-                background: "linear-gradient(135deg, #5568d3 0%, #6a3f8c 100%)",
-              },
-            }}
           >
             Create Tracker
           </Button>
@@ -203,7 +197,6 @@ const Trackers: React.FC = () => {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => handleOpenDialog()}
-            sx={{ background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" }}
           >
             Create Tracker
           </Button>
@@ -341,7 +334,6 @@ const Trackers: React.FC = () => {
             onClick={handleSave}
             variant="contained"
             disabled={!formData.name || !formData.type || !formData.currency}
-            sx={{ background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" }}
           >
             {editMode ? "Update" : "Create"}
           </Button>

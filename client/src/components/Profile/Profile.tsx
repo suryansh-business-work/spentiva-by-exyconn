@@ -319,9 +319,6 @@ const Profile: React.FC = () => {
             size="large"
             onClick={handleUpdateProfile}
             disabled={loading || !name.trim()}
-            sx={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            }}
           >
             {loading ? <CircularProgress size={24} color="inherit" /> : 'Save Changes'}
           </Button>
