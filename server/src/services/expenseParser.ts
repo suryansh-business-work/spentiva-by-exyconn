@@ -2,9 +2,9 @@ import OpenAI from "openai";
 import { EXPENSE_CATEGORIES, PAYMENT_METHODS } from "../config/categories";
 import { ParsedExpense } from "../types";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const openai = process.env.OPENAI_API_KEY 
+  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  : null;
 
 export class ExpenseParser {
   private static buildSystemPrompt(): string {
@@ -45,6 +45,12 @@ If you cannot parse the message, respond with:
   }
 
   static async parseExpense(userMessage: string): Promise<ParsedExpense | { error: string }> {
+    if (!openai) {
+      return {
+        error: "OpenAI API key not configured. Cannot parse expense.",
+      };
+    }
+
     try {
       const completion = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
@@ -96,6 +102,10 @@ If you cannot parse the message, respond with:
   }
 
   static async getChatResponse(userMessage: string, conversationHistory: any[]): Promise<string> {
+    if (!openai) {
+      return "OpenAI API key not configured. Cannot provide chat responses.";
+    }
+
     try {
       const messages = [
         {
