@@ -30,6 +30,8 @@ import {
 import { Bar, Pie, Line } from "react-chartjs-2";
 import { analyticsApi } from "../../services/analyticsApi";
 import type { AnalyticsSummary, CategoryAnalytics, MonthlyAnalytics } from "../../services/analyticsApi";
+import DownloadIcon from "@mui/icons-material/Download";
+import EmailIcon from "@mui/icons-material/Email";
 
 interface DashboardProps {
   trackerId?: string;
@@ -56,6 +58,7 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
   const [monthlyData, setMonthlyData] = useState<MonthlyAnalytics[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [emailLoading, setEmailLoading] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -95,6 +98,76 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
     if (newFilter !== "custom") {
       setCustomStartDate("");
       setCustomEndDate("");
+    }
+  };
+
+  const handleDownloadReport = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const params = new URLSearchParams({
+        filter,
+        ...(customStartDate && { startDate: customStartDate }),
+        ...(customEndDate && { endDate: customEndDate }),
+        ...(trackerId && { trackerId }),
+      });
+
+      const response = await fetch(`http://localhost:5000/api/reports/download?${params}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to download report' }));
+        throw new Error(errorData.message || 'Failed to download report');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `expense-report-${filter}-${Date.now()}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error downloading report:', error);
+      alert((error as Error).message || 'Failed to download report');
+    }
+  };
+
+  const handleEmailReport = async () => {
+    try {
+      setEmailLoading(true);
+      const token = localStorage.getItem('token');
+
+      const response = await fetch('http://localhost:5000/api/reports/email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          filter,
+          ...(customStartDate && { startDate: customStartDate }),
+          ...(customEndDate && { endDate: customEndDate }),
+          ...(trackerId && { trackerId }),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to send email');
+      }
+
+      alert(data.message || 'Report sent successfully to your email');
+    } catch (error) {
+      console.error('Error sending email report:', error);
+      alert((error as Error).message || 'Failed to send email report');
+    } finally {
+      setEmailLoading(false);
     }
   };
 
@@ -173,30 +246,54 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
-          <ButtonGroup variant="outlined" size="small">
-            {["today", "yesterday", "last7days", "lastMonth", "thisMonth", "indiaFY", "thisYear", "custom"].map(
-              (filterOption) => (
-                <Button
-                  key={filterOption}
-                  variant={filter === filterOption ? "contained" : "outlined"}
-                  onClick={() => handleFilterChange(filterOption)}
-                >
-                  {filterOption === "last7days"
-                    ? "Last 7 Days"
-                    : filterOption === "lastMonth"
-                    ? "Last Month"
-                    : filterOption === "thisMonth"
-                    ? "This Month"
-                    : filterOption === "indiaFY"
-                    ? "India FY"
-                    : filterOption === "thisYear"
-                    ? "This Year"
-                    : filterOption}
-                </Button>
-              )
-            )}
-          </ButtonGroup>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, flexWrap: "wrap", gap: 2 }}>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+            <ButtonGroup variant="outlined" size="small">
+              {["today", "yesterday", "last7days", "lastMonth", "thisMonth", "indiaFY", "thisYear", "custom"].map(
+                (filterOption) => (
+                  <Button
+                    key={filterOption}
+                    variant={filter === filterOption ? "contained" : "outlined"}
+                    onClick={() => handleFilterChange(filterOption)}
+                  >
+                    {filterOption === "last7days"
+                      ? "Last 7 Days"
+                      : filterOption === "lastMonth"
+                      ? "Last Month"
+                      : filterOption === "thisMonth"
+                      ? "This Month"
+                      : filterOption === "indiaFY"
+                      ? "India FY"
+                      : filterOption === "thisYear"
+                      ? "This Year"
+                      : filterOption}
+                  </Button>
+                )
+              )}
+            </ButtonGroup>
+          </Box>
+
+          <Box sx={{ display: "flex", gap: 1 }}>
+            <Button
+              variant="outlined"
+              startIcon={<DownloadIcon />}
+              onClick={handleDownloadReport}
+              size="small"
+              sx={{ textTransform: "none" }}
+            >
+              Download Report
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<EmailIcon />}
+              onClick={handleEmailReport}
+              disabled={emailLoading}
+              size="small"
+              sx={{ textTransform: "none" }}
+            >
+              {emailLoading ? "Sending..." : "Email Report"}
+            </Button>
+          </Box>
         </Box>
 
         {filter === "custom" && (

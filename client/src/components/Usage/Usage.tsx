@@ -5,7 +5,6 @@ import {
   Typography,
   Card,
   CardContent,
-  Grid,
   LinearProgress,
   Chip,
   Button,
@@ -20,6 +19,7 @@ import {
   IconButton,
   Tooltip,
 } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import {
   TrendingUp as TrendingUpIcon,
   Star as StarIcon,
@@ -167,7 +167,7 @@ const Usage = () => {
       {/* Usage Overview */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {/* Current Plan Card */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card
             sx={{
               background: `linear-gradient(135deg, ${currentPlan.color}22 0%, ${currentPlan.color}11 100%)`,
@@ -200,7 +200,7 @@ const Usage = () => {
         </Grid>
 
         {/* Messages Used Card */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card sx={{ borderRadius: 2 }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -220,7 +220,7 @@ const Usage = () => {
         </Grid>
 
         {/* Usage Progress Card */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card sx={{ borderRadius: 2 }}>
             <CardContent>
               <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
@@ -258,7 +258,7 @@ const Usage = () => {
       {/* Filter by Tracker */}
       <Paper sx={{ p: 2, mb: 3, borderRadius: 2 }}>
         <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <FormControl fullWidth size="small">
               <InputLabel>Filter by Tracker</InputLabel>
               <Select
@@ -275,7 +275,7 @@ const Usage = () => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Box sx={{ textAlign: { xs: 'left', md: 'right' } }}>
               <Typography variant="body1" sx={{ fontWeight: 600 }}>
                 Filtered Messages: <span style={{ color: '#845c58' }}>{filteredMessages}</span>
@@ -293,7 +293,7 @@ const Usage = () => {
           </Typography>
           <Grid container spacing={2}>
             {trackers.length === 0 ? (
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <Typography variant="body2" color="text.secondary" align="center">
                   No trackers found. Create a tracker to start tracking usage.
                 </Typography>
@@ -303,7 +303,7 @@ const Usage = () => {
                 const messages = usageData.trackerUsage[tracker.id] || 0;
                 const percentage = (messages / usageData.totalMessages) * 100 || 0;
                 return (
-                  <Grid item xs={12} sm={6} md={4} key={tracker.id}>
+                  <Grid size={{ xs: 12, sm: 6, md: 4 }} key={tracker.id}>
                     <Paper
                       sx={{
                         p: 2,
@@ -353,7 +353,7 @@ const Usage = () => {
       </Typography>
       <Grid container spacing={3}>
         {SUBSCRIPTION_PLANS.map((plan) => (
-          <Grid item xs={12} md={4} key={plan.name}>
+          <Grid size={{ xs: 12, md: 4 }} key={plan.name}>
             <Card
               sx={{
                 position: 'relative',

@@ -19,6 +19,7 @@ import { ExpenseParser } from "./services/expenseParser";
 import { AnalyticsService } from "./services/analyticsService";
 import { Expense } from "./types";
 import { EXPENSE_CATEGORIES, PAYMENT_METHODS } from "./config/categories";
+import reportRoutes from "./routes/report";
 
 const app = express();
 const PORT = config.PORT;
@@ -30,6 +31,9 @@ db(config.DBURL);
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
+// Report routes
+app.use('/api/reports', reportRoutes);
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({

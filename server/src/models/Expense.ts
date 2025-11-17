@@ -9,6 +9,7 @@ export interface IExpense extends Document {
   description?: string;
   timestamp: Date;
   userId?: string;
+  trackerId?: string;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -33,6 +33,7 @@ import ShowChartIcon from "@mui/icons-material/ShowChart";
 import { useThemeMode } from "../../contexts/ThemeContext";
 import { useAuth } from "../../contexts/AuthContext";
 import palette from "../../theme/palette";
+import Logo from "../Logo";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -99,33 +100,17 @@ const Header: React.FC = () => {
         }}
       >
         <Toolbar sx={{ minHeight: { xs: 56, sm: 60 }, px: { xs: 2, sm: 2.5 } }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flexGrow: 1 }}>
-            <Box
-              sx={{
-                width: { xs: 32, sm: 36 },
-                height: { xs: 32, sm: 36 },
-                borderRadius: 2,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                background: palette.gradients.primary,
-                boxShadow: `0 2px 8px ${palette.shadows.medium}`,
-              }}
-            >
-              <AccountBalanceWalletIcon sx={{ color: '#fff', fontSize: { xs: 18, sm: 20 } }} />
-            </Box>
-            <Typography
-              variant="h6"
-              component="div"
-              sx={{
-                fontWeight: 700,
-                fontSize: { xs: "1rem", sm: "1.15rem" },
-                color: palette.text.primary,
-                letterSpacing: "-0.3px",
-              }}
-            >
-              Expense Tracker
-            </Typography>
+          <Box 
+            sx={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: 1.5, 
+              flexGrow: 1,
+              cursor: 'pointer'
+            }}
+            onClick={() => navigate("/trackers")}
+          >
+            <Logo width={140} height={40} />
           </Box>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.5, sm: 1 } }}>
