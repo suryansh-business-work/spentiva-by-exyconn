@@ -239,7 +239,7 @@ Client Request                 Nginx                   Docker Container
 
 https://spentiva.com      →    Port 443    →    website:80 (8003)
 https://app.spentiva.com  →    Port 443    →    client:80 (8001)
-https://backend.spentiva.com → Port 443    →    server:5000 (8002)
+https://backend.spentiva.com → Port 443    →    server:8002 (8002)
 ```
 
 **Without nginx:**
@@ -249,7 +249,7 @@ Client Request                            Docker Container
 
 http://spentiva.com:8003       →    website:80 (8003)
 http://app.spentiva.com:8001   →    client:80 (8001)
-http://backend.spentiva.com:8002 →  server:5000 (8002)
+http://backend.spentiva.com:8002 →  server:8002 (8002)
 ```
 
 ## 🎯 Deployment Stages
@@ -336,7 +336,7 @@ External    →    Container Internal
 ──────────────────────────────────
 8003        →    80 (nginx in website container)
 8001        →    80 (nginx in client container)
-8002        →    5000 (node.js in server container)
+8002        →    8002 (node.js in server container)
 ```
 
 ---

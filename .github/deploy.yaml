@@ -124,8 +124,8 @@ jobs:
               --name spentiva-server \
               --network spentiva-network \
               --restart always \
-              -p 8002:5000 \
-              -e PORT=5000 \
+              -p 8002:8002 \
+              -e PORT=8002 \
               -e MONGODB_URL="${{ secrets.MONGODB_URL }}" \
               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
               -e OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \

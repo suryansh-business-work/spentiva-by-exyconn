@@ -110,7 +110,7 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
         ...(trackerId && { trackerId }),
       });
 
-      const response = await fetch(`http://localhost:5000/api/reports/download?${params}`, {
+      const response = await fetch(`http://localhost:8002/api/reports/download?${params}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -141,7 +141,7 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
       setEmailLoading(true);
       const token = localStorage.getItem('token');
 
-      const response = await fetch('http://localhost:5000/api/reports/email', {
+      const response = await fetch('http://localhost:8002/api/reports/email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

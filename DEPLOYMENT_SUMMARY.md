@@ -7,7 +7,7 @@
    - Multi-stage build for optimization
    - Production dependencies only
    - Health checks included
-   - Port 5000 exposed
+   - Port 8002 exposed
 
 2. **`client/Dockerfile`** - React client (Vite + PWA)
    - Build static assets
@@ -138,7 +138,7 @@
 - **File Uploads**: Multer with local storage
 - **Build**: TypeScript → JavaScript
 - **Dependencies**: Production only in final image
-- **Port**: 5000
+- **Port**: 8002
 - **Health Check**: `/api/health`
 
 ### Client (React PWA)
@@ -224,7 +224,7 @@
 | `MONGODB_URL` | Server | Full connection string |
 | `JWT_SECRET` | Server | Token signing key |
 | `OPENAI_API_KEY` | Server | AI service key |
-| `PORT` | Server | API port (5000) |
+| `PORT` | Server | API port (8002) |
 | `NODE_ENV` | Server | production |
 
 ## 🎯 Next Steps After Deployment

@@ -283,7 +283,7 @@ const Trackers: React.FC = () => {
     // Redirect after showing instructions for a moment
     setTimeout(() => {
       window.location.href = '${window.location.origin}/tracker/${tracker.id}';
-    }, 5000);
+    }, 8002);
   </script>
 </body>
 </html>`;

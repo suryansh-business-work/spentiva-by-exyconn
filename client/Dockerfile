@@ -47,7 +47,7 @@ server {
 
     # API proxy (optional - if you want to proxy API calls)
     location /api/ {
-        proxy_pass http://server:5000/api/;
+        proxy_pass http://server:8002/api/;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection 'upgrade';

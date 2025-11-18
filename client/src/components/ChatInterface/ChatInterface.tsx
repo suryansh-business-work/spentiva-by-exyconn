@@ -43,7 +43,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
     if (user?.profilePhoto) {
       return user.profilePhoto.startsWith('http') 
         ? user.profilePhoto 
-        : `http://localhost:5000${user.profilePhoto}`;
+        : `http://localhost:8002${user.profilePhoto}`;
     }
     return '';
   };

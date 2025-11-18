@@ -186,7 +186,7 @@ const Profile: React.FC = () => {
   const getPhotoUrl = () => {
     if (photoPreview) return photoPreview;
     if (user?.profilePhoto) {
-      return `http://localhost:5000${user.profilePhoto}`;
+      return `http://localhost:8002${user.profilePhoto}`;
     }
     return undefined;
   };

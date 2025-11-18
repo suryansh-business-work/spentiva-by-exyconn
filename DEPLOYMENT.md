@@ -105,7 +105,7 @@ docker network create spentiva-network
 # Backend Server
 docker run -d --name spentiva-server \
   --network spentiva-network \
-  -p 8002:5000 \
+  -p 8002:8002 \
   -e MONGODB_URL="mongodb://admin:password@spentiva-mongodb:27017/expenses?authSource=admin" \
   -e JWT_SECRET="your-secret" \
   -e OPENAI_API_KEY="sk-xxx" \

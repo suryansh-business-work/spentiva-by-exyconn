@@ -83,7 +83,7 @@ const Header: React.FC = () => {
     if (user?.profilePhoto) {
       return user.profilePhoto.startsWith('http') 
         ? user.profilePhoto 
-        : `http://localhost:5000${user.profilePhoto}`;
+        : `http://localhost:8002${user.profilePhoto}`;
     }
     return '';
   };
