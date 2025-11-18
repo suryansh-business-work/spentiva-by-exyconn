@@ -51,10 +51,10 @@ interface UsageData {
     trackerId: string;
     trackerName: string;
     trackerType: string;
+    isDeleted: boolean;
+    deletedAt?: string;
     messageCount: number;
     tokenCount: number;
-    userMessages: number;
-    aiMessages: number;
   }>;
   recentActivity: Array<{
     date: string;
@@ -64,13 +64,19 @@ interface UsageData {
 }
 
 interface TrackerUsageData {
-  trackerId: string;
-  trackerName: string;
-  trackerType: string;
-  totalMessages: number;
-  totalTokens: number;
-  userMessages: number;
-  aiMessages: number;
+  tracker: {
+    trackerId: string;
+    trackerName: string;
+    trackerType: string;
+    isDeleted: boolean;
+    deletedAt?: string;
+  };
+  usage: {
+    totalMessages: number;
+    totalTokens: number;
+    userMessages: number;
+    aiMessages: number;
+  };
   dailyUsage: Array<{
     date: string;
     messageCount: number;
@@ -97,6 +103,7 @@ const Usage = () => {
   const [selectedTracker, setSelectedTracker] = useState<string>('all');
   const [trackerUsageData, setTrackerUsageData] = useState<TrackerUsageData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [trackerLoading, setTrackerLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentTab, setCurrentTab] = useState(0);
 
@@ -155,11 +162,20 @@ const Usage = () => {
   };
 
   const loadTrackerUsage = async (trackerId: string) => {
+    setTrackerLoading(true);
+    setError(null);
     try {
+      console.log('Loading tracker usage for:', trackerId);
       const data = await api.getTrackerUsage(trackerId);
+      console.log('Tracker usage data received:', data);
       setTrackerUsageData(data);
     } catch (err: any) {
       console.error('Error loading tracker usage:', err);
+      const errorMsg = err.response?.data?.error || err.message || 'Failed to load tracker usage';
+      setError(errorMsg);
+      setTrackerUsageData(null);
+    } finally {
+      setTrackerLoading(false);
     }
   };
 
@@ -420,9 +436,11 @@ const Usage = () => {
       {/* Tracker Dropdown */}
       <Box sx={{ mb: 3 }}>
         <FormControl fullWidth sx={{ maxWidth: 400 }}>
-          <InputLabel>Select Tracker</InputLabel>
+          <InputLabel id="tracker-select-label">Select Tracker</InputLabel>
           <Select
-            value={selectedTracker}
+            labelId="tracker-select-label"
+            id="tracker-select"
+            value={selectedTracker || 'all'}
             label="Select Tracker"
             onChange={handleTrackerChange}
           >
@@ -576,12 +594,22 @@ const Usage = () => {
 
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                   <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.9em' }}>
-                                    User / AI
+                                    Token Count
                                   </Typography>
                                   <Typography variant="body1" sx={{ fontWeight: 600, fontSize: '1em' }}>
-                                    {tracker.userMessages} / {tracker.aiMessages}
+                                    {tracker.tokenCount.toLocaleString()}
                                   </Typography>
                                 </Box>
+                                {tracker.isDeleted && (
+                                  <Box sx={{ mt: 1 }}>
+                                    <Chip 
+                                      label="Deleted" 
+                                      size="small"
+                                      color="error"
+                                      sx={{ fontSize: '0.7em' }}
+                                    />
+                                  </Box>
+                                )}
                               </Stack>
                             </Paper>
                           </Grid>
@@ -590,14 +618,28 @@ const Usage = () => {
                     </Grid>
                   )}
                 </Box>
-              ) : (
-                // Show selected tracker usage
+              ) : trackerLoading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                  <CircularProgress />
+                </Box>
+              ) : error ? (
+                <Alert severity="error" sx={{ mb: 3 }}>
+                  {error}
+                </Alert>
+              ) : trackerUsageData ? (
                 <Box>
-                  {trackerUsageData ? (
-                    <Box>
-                      <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
-                        {trackerUsageData.trackerName} - Detailed Usage
-                      </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                      {trackerUsageData.tracker.trackerName} - Detailed Usage
+                    </Typography>
+                    {trackerUsageData.tracker.isDeleted && (
+                      <Chip 
+                        label="Deleted Tracker" 
+                        color="error"
+                        size="small"
+                      />
+                    )}
+                  </Box>
                       
                       <Grid container spacing={3} sx={{ mb: 4 }}>
                         <Grid size={{ xs: 6, md: 3 }}>
@@ -606,7 +648,7 @@ const Usage = () => {
                               Total Messages
                             </Typography>
                             <Typography variant="h4" sx={{ fontWeight: 700, color: '#667eea' }}>
-                              {trackerUsageData.totalMessages}
+                              {trackerUsageData.usage.totalMessages}
                             </Typography>
                           </Paper>
                         </Grid>
@@ -616,7 +658,7 @@ const Usage = () => {
                               Total Tokens
                             </Typography>
                             <Typography variant="h4" sx={{ fontWeight: 700, color: '#10b981' }}>
-                              {trackerUsageData.totalTokens.toLocaleString()}
+                              {trackerUsageData.usage.totalTokens.toLocaleString()}
                             </Typography>
                           </Paper>
                         </Grid>
@@ -626,7 +668,7 @@ const Usage = () => {
                               User Messages
                             </Typography>
                             <Typography variant="h4" sx={{ fontWeight: 700, color: '#3b82f6' }}>
-                              {trackerUsageData.userMessages}
+                              {trackerUsageData.usage.userMessages}
                             </Typography>
                           </Paper>
                         </Grid>
@@ -636,7 +678,7 @@ const Usage = () => {
                               AI Messages
                             </Typography>
                             <Typography variant="h4" sx={{ fontWeight: 700, color: '#f59e0b' }}>
-                              {trackerUsageData.aiMessages}
+                              {trackerUsageData.usage.aiMessages}
                             </Typography>
                           </Paper>
                         </Grid>
@@ -689,12 +731,11 @@ const Usage = () => {
                       )}
                     </Box>
                   ) : (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-                      <CircularProgress />
-                    </Box>
-                  )}
-                </Box>
-              )}
+                    <Alert severity="info">
+                      No usage data available for this tracker yet
+                    </Alert>
+                  )
+              }
             </Box>
           )}
 
@@ -719,7 +760,7 @@ const Usage = () => {
               ) : trackerUsageData && (
                 <Box>
                   <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                    {trackerUsageData.trackerName} - Usage Trends
+                    {trackerUsageData.tracker.trackerName} - Message Logs
                   </Typography>
                   <Paper sx={{ p: 4, textAlign: 'center', bgcolor: '#f8f9fa', borderRadius: 2 }}>
                     <ShowChartIcon sx={{ fontSize: 64, color: '#8892a9', mb: 2 }} />
@@ -742,7 +783,7 @@ const Usage = () => {
               ) : trackerUsageData && trackerUsageData.messages && trackerUsageData.messages.length > 0 ? (
                 <Box>
                   <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
-                    {trackerUsageData.trackerName} - Message Logs
+                    {trackerUsageData.tracker.trackerName} - Message Logs
                   </Typography>
                   <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e8eaec' }}>
                     <Table>

@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import PhoneIcon from '@mui/icons-material/Phone';
 import LockIcon from '@mui/icons-material/Lock';
 import { useAuth } from '../../contexts/AuthContext';
+import Logo from '../Logo/Logo';
 import axios from 'axios';
 
 const Login: React.FC = () => {
@@ -87,6 +88,9 @@ const Login: React.FC = () => {
   return (
     <Container maxWidth="sm" sx={{ py: 8 }}>
       <Paper elevation={3} sx={{ p: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+          <Logo width={180} height={50} />
+        </Box>
         <Box sx={{ textAlign: 'center', mb: 4 }}>
           <Typography variant="h4" gutterBottom sx={{ fontWeight: 700, color: '#667eea' }}>
             Login
@@ -195,6 +199,15 @@ const Login: React.FC = () => {
             </Button>
           </Box>
         )}
+
+        <Box sx={{ textAlign: 'center', mt: 4, pt: 3, borderTop: '1px solid #e0e0e0' }}>
+          <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', display: 'block' }}>
+            Spentiva
+          </Typography>
+          <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+            By Exyconn
+          </Typography>
+        </Box>
       </Paper>
     </Container>
   );

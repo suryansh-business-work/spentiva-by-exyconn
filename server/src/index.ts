@@ -21,7 +21,6 @@ import { Expense } from "./types";
 import { EXPENSE_CATEGORIES, PAYMENT_METHODS } from "./config/categories";
 import reportRoutes from "./routes/report";
 import usageRoutes from "./routes/usage";
-import { logMessage } from "./controllers/usageController";
 
 const app = express();
 const PORT = config.PORT;
@@ -408,32 +407,70 @@ app.post("/api/parse-expense", authenticateToken, async (req: any, res) => {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    // Log user message if userId and trackerId are available
+    if (!trackerId) {
+      return res.status(400).json({ error: "Tracker ID is required" });
+    }
+
+    // Get tracker information for snapshot
+    let trackerSnapshot = null;
     if (req.user?.userId && trackerId) {
       try {
-        console.log('[Parse Expense] Logging user message...');
-        await logMessage(req.user.userId, trackerId, 'user', message);
-        console.log('[Parse Expense] User message logged successfully');
+        const tracker = await TrackerModel.findOne({ 
+          _id: trackerId, 
+          userId: req.user.userId 
+        });
+
+        if (tracker) {
+          const { createTrackerSnapshot } = await import('./utils/usageLogger');
+          trackerSnapshot = createTrackerSnapshot(tracker);
+        } else {
+          return res.status(404).json({ error: "Tracker not found" });
+        }
+      } catch (err) {
+        console.error("[Parse Expense] Error fetching tracker:", err);
+        return res.status(500).json({ error: "Error fetching tracker information" });
+      }
+    }
+
+    // Log user message with tracker snapshot
+    if (trackerSnapshot) {
+      try {
+        const { encode } = await import('gpt-tokenizer');
+        const userTokens = encode(message).length;
+        
+        const { logUsage } = await import('./utils/usageLogger');
+        await logUsage(
+          req.user.userId,
+          trackerSnapshot,
+          'user',
+          message,
+          userTokens
+        );
+        console.log('[Parse Expense] User message logged with snapshot');
       } catch (logError) {
         console.error("[Parse Expense] Error logging user message:", logError);
         // Continue processing even if logging fails
       }
-    } else {
-      console.log('[Parse Expense] Skipping user message logging:', {
-        hasUserId: !!req.user?.userId,
-        hasTrackerId: !!trackerId
-      });
     }
 
     const parsed = await ExpenseParser.parseExpense(message);
 
-    // Log AI response if parsing was successful
-    if (req.user?.userId && trackerId && !("error" in parsed)) {
+    // Log AI response with tracker snapshot
+    if (trackerSnapshot && !("error" in parsed)) {
       try {
         const responseText = `Parsed expense: ₹${parsed.amount} for ${parsed.subcategory} via ${parsed.paymentMethod}`;
-        console.log('[Parse Expense] Logging AI response...');
-        await logMessage(req.user.userId, trackerId, 'assistant', responseText);
-        console.log('[Parse Expense] AI response logged successfully');
+        const { encode } = await import('gpt-tokenizer');
+        const aiTokens = encode(responseText).length;
+        
+        const { logUsage } = await import('./utils/usageLogger');
+        await logUsage(
+          req.user.userId,
+          trackerSnapshot,
+          'assistant',
+          responseText,
+          aiTokens
+        );
+        console.log('[Parse Expense] AI response logged with snapshot');
       } catch (logError) {
         console.error("[Parse Expense] Error logging AI response:", logError);
         // Continue processing even if logging fails
@@ -610,16 +647,55 @@ app.post("/api/chat", authenticateToken, async (req: any, res) => {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    // Log user message
+    // Get tracker snapshot and log user message
+    let trackerSnapshot = null;
     if (req.user?.userId && trackerId) {
-      await logMessage(req.user.userId, trackerId, 'user', message);
+      try {
+        const tracker = await TrackerModel.findOne({ 
+          _id: trackerId, 
+          userId: req.user.userId 
+        });
+
+        if (tracker) {
+          const { createTrackerSnapshot, logUsage } = await import('./utils/usageLogger');
+          const { encode } = await import('gpt-tokenizer');
+          
+          trackerSnapshot = createTrackerSnapshot(tracker);
+          const userTokens = encode(message).length;
+          
+          await logUsage(
+            req.user.userId,
+            trackerSnapshot,
+            'user',
+            message,
+            userTokens
+          );
+        }
+      } catch (err) {
+        console.error("[Chat] Error logging user message:", err);
+      }
     }
 
     const response = await ExpenseParser.getChatResponse(message, history);
 
     // Log AI response
-    if (req.user?.userId && trackerId && response) {
-      await logMessage(req.user.userId, trackerId, 'assistant', response);
+    if (trackerSnapshot && response) {
+      try {
+        const { logUsage } = await import('./utils/usageLogger');
+        const { encode } = await import('gpt-tokenizer');
+        
+        const aiTokens = encode(response).length;
+        
+        await logUsage(
+          req.user.userId,
+          trackerSnapshot,
+          'assistant',
+          response,
+          aiTokens
+        );
+      } catch (err) {
+        console.error("[Chat] Error logging AI response:", err);
+      }
     }
 
     res.json({ response });
@@ -891,6 +967,18 @@ app.put("/api/trackers/:id", authenticateToken, async (req: any, res) => {
       return res.status(404).json({ error: "Tracker not found" });
     }
 
+    // Update tracker information in usage records
+    if (name || type) {
+      try {
+        const { updateTrackerInUsage } = await import('./utils/usageLogger');
+        await updateTrackerInUsage(id, tracker.name, tracker.type);
+        console.log(`✅ Updated tracker ${id} in usage records`);
+      } catch (usageError) {
+        console.error("Error updating tracker in usage:", usageError);
+        // Don't fail the update operation if usage update fails
+      }
+    }
+
     res.json({
       message: "Tracker updated successfully",
       tracker: {
@@ -917,6 +1005,16 @@ app.delete("/api/trackers/:id", authenticateToken, async (req: any, res) => {
 
     if (!tracker) {
       return res.status(404).json({ error: "Tracker not found" });
+    }
+
+    // Mark tracker as deleted in usage records (so data is preserved)
+    try {
+      const { markTrackerAsDeleted } = await import('./utils/usageLogger');
+      await markTrackerAsDeleted(id);
+      console.log(`✅ Marked tracker ${id} as deleted in usage records`);
+    } catch (usageError) {
+      console.error("Error marking tracker as deleted in usage:", usageError);
+      // Don't fail the delete operation if usage marking fails
     }
 
     // Also delete all expenses associated with this tracker

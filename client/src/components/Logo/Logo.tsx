@@ -45,7 +45,7 @@ const Logo: React.FC<LogoProps> = ({ width = 140, height = 40 }) => {
         <circle cx="22" cy="22" r="2" fill="white" opacity="0.6" />
       </g>
 
-      {/* Text - "expensia" */}
+      {/* Text - "spentiva" */}
       <text
         x="38"
         y="26"
@@ -55,7 +55,20 @@ const Logo: React.FC<LogoProps> = ({ width = 140, height = 40 }) => {
         fill="url(#logoGradient)"
         letterSpacing="-0.5"
       >
-        expensia
+        spentiva
+      </text>
+      
+      {/* Subtitle - "By exyconn" */}
+      <text
+        x="38"
+        y="38"
+        fontFamily="'Inter', 'Segoe UI', system-ui, sans-serif"
+        fontSize="10"
+        fontWeight="500"
+        fill="#333"
+        opacity="0.85"
+      >
+        By exyconn
       </text>
     </Box>
   );

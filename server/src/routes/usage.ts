@@ -1,5 +1,5 @@
 import express from 'express';
-import { getOverallUsage, getTrackerUsage } from '../controllers/usageController';
+import { getOverallUsage, getTrackerUsage, getTrackerLogs } from '../controllers/usageController';
 import { authenticate } from '../middleware/auth';
 import MessageModel from '../models/Message';
 
@@ -10,6 +10,9 @@ router.get('/overall', authenticate, getOverallUsage);
 
 // Get usage for a specific tracker
 router.get('/tracker/:trackerId', authenticate, getTrackerUsage);
+
+// Get logs for a specific tracker
+router.get('/tracker/:trackerId/logs', authenticate, getTrackerLogs);
 
 // Debug endpoint to check messages in database
 router.get('/debug/messages', authenticate, async (req: any, res) => {

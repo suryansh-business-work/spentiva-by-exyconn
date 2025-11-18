@@ -89,4 +89,11 @@ export const api = {
     const response = await axios.get(`${API_URL}/usage/tracker/${trackerId}`);
     return response.data;
   },
+
+  getTrackerLogs: async (trackerId: string, limit = 100, offset = 0): Promise<any> => {
+    const response = await axios.get(`${API_URL}/usage/tracker/${trackerId}/logs`, {
+      params: { limit, offset }
+    });
+    return response.data;
+  },
 };
