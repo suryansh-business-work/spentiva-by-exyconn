@@ -4,8 +4,8 @@
   "description": "Spentiva by Exyconn - AI-Powered Expense Tracking",
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
+    "dev": "astro dev --port 8003",
+    "start": "astro dev --port 8003",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
