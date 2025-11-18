@@ -83,6 +83,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
+          command_timeout: 30m
           script: |
             echo "Starting deployment..."
             
@@ -92,8 +93,6 @@ jobs:
             
             # Create .env file from secrets
             cat > .env << EOF
-            MONGO_ROOT_USERNAME=${{ secrets.MONGO_ROOT_USERNAME }}
-            MONGO_ROOT_PASSWORD=${{ secrets.MONGO_ROOT_PASSWORD }}
             MONGODB_URL=${{ secrets.MONGODB_URL }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
@@ -108,32 +107,19 @@ jobs:
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/spentiva-client:latest
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/spentiva-server:latest
             
-            # Stop and remove old containers
+            # Stop and remove old containers (including MongoDB from previous deployments)
             echo "Stopping old containers..."
             docker stop spentiva-website spentiva-client spentiva-server spentiva-mongodb 2>/dev/null || true
             docker rm spentiva-website spentiva-client spentiva-server spentiva-mongodb 2>/dev/null || true
+            
+            # Remove old MongoDB volume (we use Atlas now)
+            docker volume rm mongodb_data 2>/dev/null || true
             
             # Create network if not exists
             docker network create spentiva-network 2>/dev/null || true
             
             # Create volumes if not exists
-            docker volume create mongodb_data 2>/dev/null || true
             docker volume create server_uploads 2>/dev/null || true
-            
-            # Start MongoDB
-            echo "Starting MongoDB..."
-            docker run -d \
-              --name spentiva-mongodb \
-              --network spentiva-network \
-              --restart always \
-              -e MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_ROOT_USERNAME }} \
-              -e MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_ROOT_PASSWORD }} \
-              -v mongodb_data:/data/db \
-              mongo:7-jammy
-            
-            # Wait for MongoDB to be ready
-            echo "Waiting for MongoDB..."
-            sleep 10
             
             # Start Backend Server
             echo "Starting Backend Server..."
@@ -141,8 +127,8 @@ jobs:
               --name spentiva-server \
               --network spentiva-network \
               --restart always \
-              -p 8002:8002 \
-              -e PORT=8002 \
+              -p 8002:5000 \
+              -e PORT=5000 \
               -e MONGODB_URL="${{ secrets.MONGODB_URL }}" \
               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
               -e OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
